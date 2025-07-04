@@ -1,0 +1,27 @@
+string itemtozohoBooks()
+{
+    organization_id = "any number"
+    all_items  = Item_Master[ID != 0];
+
+    for each item in all_items
+    {
+        if(items.tags == "Non Consignment")
+        {
+            item_data = Map();
+            item_data.put("name",item.Item_Name);
+            item_data.put("sku",item.SKU);
+            item_data.put("rate",item.Cost_Price);
+            item_data.put("unit",item.Unit);
+            item_data.put("is_taxable",false);
+            resp = invokeurl
+            [
+                url = "https://www.zohoapis.com/books/v3/items?organization_id="+organizatin_id + "&per_page=50"
+                type : POST
+                body : item_data.toString()
+                connection:"books_connection"
+
+            ];
+  return "Success";
+
+    }
+}

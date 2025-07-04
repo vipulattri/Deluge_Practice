@@ -1,0 +1,4 @@
+data = Item_Master[item_name == input.Item_Name];
+info data;
+// if matches then we move forward
+

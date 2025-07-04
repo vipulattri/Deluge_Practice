@@ -1,0 +1,18 @@
+data = Purhchase_Order[PO_Number == input.Purchase_Order_Number.PO_Number];
+row  = Collection();
+input.Vendor_Name = input.Purchase_Order_Number.Vendor_Name.Vendor;
+
+for each ele in data.item_Details 
+{
+    row1 = GRN.Item_Details();
+    row1.S_No = ele.S_No;
+    row1.Item_Name = ele.Item_Name1.Item_Name;
+    row1.Item_Type = ele.Item_Type;
+    row1.SKU  = ele.SKU;
+    row1.Amount = ele.Amount;
+    row1.PO_Qty = ele.Quantity;
+    row1.Tag = input.Tag;
+    row1.BinLocation = input.Bin_Location;
+    rows.insert(row1);
+}
+input.Item_Details.insert(rows);

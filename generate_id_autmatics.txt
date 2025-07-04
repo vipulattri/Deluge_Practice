@@ -1,0 +1,30 @@
+if(input.ID != 0)
+{
+	lastRecord = Consignment_Item_Master[ID != 0] sort by ID desc;
+	if(lastRecord.count() > 0)
+	{
+		lastSKU = lastRecord.SKU;
+		if(lastSKU != null && lastSKU != "")
+		{
+			// Extract numeric part (assumes format like C-001)
+			lastNumberPart = lastSKU.getSuffix("-").toNumber();
+			nextNumberPart = (lastNumberPart + 1).toText();
+			// Pad with zeros to make it 3 digits
+			if(nextNumberPart.length() < 3)
+			{
+				nextNumberPart = "0".repeat(3 - nextNumberPart.length()) + nextNumberPart;
+			}
+		}
+		else
+		{
+			nextNumberPart = "001";
+		}
+	}
+	else
+	{
+		nextNumberPart = "001";
+	}
+	// Final SKU
+	input.SKU = "C-" + nextNumberPart;
+	disable SKU;
+}

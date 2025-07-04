@@ -1,0 +1,23 @@
+serial = 1;
+
+for each row in input.Item_Details
+{
+    row.S_No = serial;
+    serial = serial + 1;
+}
+
+
+serial = 1;
+for each item in input.Item_Details{
+    row.S_No = serial;
+    serial = serial +1;
+
+}
+
+serial = 1;
+for each row in input.Item_Details
+{
+    row.S_No = serial;
+    serial = serial + 1;
+    
+}

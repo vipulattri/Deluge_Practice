@@ -1,0 +1,12 @@
+data = insert into Consolidated_Item_Master
+[
+    Added_User = zoho.loginuser
+    Item_Name = input.Item_Name
+    Warehouse = input.Warehouse
+    Vendor_Name = input.Vendor_Name
+    GRN_Number = input.GRN_Number
+    Quantity = input.Quantity
+    Bin_location = input.Bin_location
+    SKU = input.SKU
+    Item_Type = input.Item_Type
+]

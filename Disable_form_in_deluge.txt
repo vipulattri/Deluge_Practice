@@ -1,0 +1,2 @@
+disable Cost_Price;
+//Consignment Stock  Module  --> Created or Edited  ---->  Load of the formDisableAmount
