@@ -1,0 +1,950 @@
+
+// // **********************************************************************************************
+// // ----------------------------------------------------------------------------------------------
+// // Testing Purpose Code is below 
+// // **********************************************************************************************
+// // ----------------------------------------------------------------------------------------------
+// organizationID = organization.get("organization_id");
+// checkRecord_Present_in_Depreciation = zoho.books.getRecords("cm_depreciation",organizationID,{},"books_far");
+// info checkRecord_Present_in_Depreciation;
+// if(!checkRecord_Present_in_Depreciation.get("module_records").isEmpty())
+// {
+// 	resultMap = Map();
+// 	resultMap.put("code",1);
+// 	resultMap.put("message","There is Some Entries Already in Depreciation , Delete them First");
+// 	return resultMap;
+// }
+// entityID = cm_dep_run_rate.get("module_record_id");
+// recdetail = zoho.books.getRecordsByID("cm_dep_run_rate",organizationID,entityID,"books_far");
+// // info recdetail;
+// module_record_hash = recdetail.get("module_record_hash");
+// depMonth = module_record_hash.get("cf_dep_for_month");
+// monthname = depMonth;
+// depYear = module_record_hash.get("cf_dep_for_year");
+// CombineDateCheck = monthname + "-" + depYear;
+// // info CombineDateCheck;
+// depMonthNoFormat = 0;
+// year = depYear;
+// // Change this to the desired year
+// // Map month names to numbers and last dates of each month
+// if(depMonth == "Jan")
+// {
+// 	depMonthNoFormat = 1;
+// 	lastDateOfMonth = "31-01-" + year;
+// }
+// else if(depMonth == "Feb")
+// {
+// 	depMonthNoFormat = 2;
+// 	// Check for leap year to determine last day of February
+// 	if(year.toNumber() % 4 == 0 && year.toNumber() % 100 != 0 || year.toNumber() % 400 == 0)
+// 	{
+// 		lastDateOfMonth = "29-02-" + year;
+// 		// Leap year
+// 	}
+// 	else
+// 	{
+// 		lastDateOfMonth = "28-02-" + year;
+// 		// Non-leap year
+// 	}
+// }
+// else if(depMonth == "Mar")
+// {
+// 	depMonthNoFormat = 3;
+// 	lastDateOfMonth = "31-03-" + year;
+// }
+// else if(depMonth == "Apr")
+// {
+// 	depMonthNoFormat = 4;
+// 	lastDateOfMonth = "30-04-" + year;
+// }
+// else if(depMonth == "May")
+// {
+// 	depMonthNoFormat = 5;
+// 	lastDateOfMonth = "31-05-" + year;
+// }
+// else if(depMonth == "Jun")
+// {
+// 	depMonthNoFormat = 6;
+// 	lastDateOfMonth = "30-06-" + year;
+// }
+// else if(depMonth == "Jul")
+// {
+// 	depMonthNoFormat = 7;
+// 	lastDateOfMonth = "31-07-" + year;
+// }
+// else if(depMonth == "Aug")
+// {
+// 	depMonthNoFormat = 8;
+// 	lastDateOfMonth = "31-08-" + year;
+// }
+// else if(depMonth == "Sep")
+// {
+// 	depMonthNoFormat = 9;
+// 	lastDateOfMonth = "30-09-" + year;
+// }
+// else if(depMonth == "Oct")
+// {
+// 	depMonthNoFormat = 10;
+// 	lastDateOfMonth = "31-10-" + year;
+// }
+// else if(depMonth == "Nov")
+// {
+// 	depMonthNoFormat = 11;
+// 	lastDateOfMonth = "30-11-" + year;
+// }
+// else if(depMonth == "Dec")
+// {
+// 	depMonthNoFormat = 12;
+// 	lastDateOfMonth = "31-12-" + year;
+// }
+// // info depMonthNoFormat;
+// // info lastDateOfMonth;
+// lastDateOfMonth_date = lastDateOfMonth.toDate();
+// // info lastDateOfMonth_date;
+// searchParam_Depreciation = Map();
+// searchParam_Depreciation.put("cf_depreciation_rundate_month_",lastDateOfMonth);
+// getRecord_Depreciation = zoho.books.getRecords("cm_depreciation",organizationID,searchParam_Depreciation,"books_far");
+// // info "getRecord_Depreciation -> " + getRecord_Depreciation;
+// if(!getRecord_Depreciation.get("module_records").isEmpty())
+// {
+// 	resultMap = Map();
+// 	resultMap.put("code",1);
+// 	resultMap.put("message","Entry for This Month-Year Pair already Existing into Depreciation Module");
+// 	return resultMap;
+// }
+// Search_dep_log = "";
+// Dep_log_records = zoho.books.getRecords("cm_depreciation_log",organizationID,Search_dep_log,"books_far");
+// dep_log_module_records = Dep_log_records.get("module_records");
+// info dep_log_module_records;
+// isMatched = false;
+// for each  log in dep_log_module_records
+// {
+// 	cf_depreciation_run_dates = log.get("cf_depreciation_run_dates");
+// 	if(lastDateOfMonth == cf_depreciation_run_dates)
+// 	{
+// 		isMatched = true;
+// 	}
+// }
+// info "isMatched -> " + isMatched;
+// if(isMatched)
+// {
+// 	resultMap = Map();
+// 	resultMap.put("code",1);
+// 	resultMap.put("message","Depreciation for this Month-Year pair executed already");
+// 	return resultMap;
+// }
+// // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// // _ _ _ _ _   _  _  _  _      Main Code  (Start from Here )  _ _ _ _ _   _  _  _  _     
+// // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// month = depMonthNoFormat;
+// year = depYear.toNumber();
+// if(month == 1)
+// {
+// 	// 		January
+// 	noOfDayInMonth = 31;
+// }
+// else if(month == 2)
+// {
+// 	// February
+// 	if(year.toNumber() % 4 == 0 && year.toNumber() % 100 != 0 || year.toNumber() % 400 == 0)
+// 	{
+// 		noOfDayInMonth = 29;
+// 		// Leap year
+// 	}
+// 	else
+// 	{
+// 		noOfDayInMonth = 28;
+// 		// Non-leap year
+// 	}
+// }
+// else if(month == 3)
+// {
+// 	// March
+// 	noOfDayInMonth = 31;
+// }
+// else if(month == 4)
+// {
+// 	// April
+// 	noOfDayInMonth = 30;
+// }
+// else if(month == 5)
+// {
+// 	// May
+// 	noOfDayInMonth = 31;
+// }
+// else if(month == 6)
+// {
+// 	// June
+// 	noOfDayInMonth = 30;
+// }
+// else if(month == 7)
+// {
+// 	// July
+// 	noOfDayInMonth = 31;
+// }
+// else if(month == 8)
+// {
+// 	// August
+// 	noOfDayInMonth = 31;
+// }
+// else if(month == 9)
+// {
+// 	// September
+// 	noOfDayInMonth = 30;
+// }
+// else if(month == 10)
+// {
+// 	// October
+// 	noOfDayInMonth = 31;
+// }
+// else if(month == 11)
+// {
+// 	// November
+// 	noOfDayInMonth = 30;
+// }
+// else if(month == 12)
+// {
+// 	// December
+// 	noOfDayInMonth = 31;
+// }
+// else
+// {
+// 	noOfDayInMonth = 0;
+// 	// Invalid month
+// }
+// // info "noOfDayInMonth -> " + noOfDayInMonth;
+// searchParam = Map();
+// listPage = {1,2,3,4,5,6,7};
+// // listPage = {1};
+// checkForPut_to_use_Date = 0;
+// for each  ele in listPage
+// {
+// 	searchParam.put("cf_asset_status_formatted","Active");
+// 	searchParam.put("page",ele);
+// 	searchParam.put("per_page","150");
+// 	data = zoho.books.getRecords("cm_asset_register",organizationID,searchParam,"books_far");
+// 	// 	info "data ->  " + data;
+// 	moduleRecords = data.get("module_records");
+// 	for each  rec in moduleRecords
+// 	{
+// 		check = 0;
+// 		cf_asset_name1 = rec.get("cf_asset_name");
+// 		cf_date_of_acquisition = rec.get("cf_asset_date_of_put_to_use");
+// 		cf_residual_value = rec.get("cf_residual_value");
+// 		if(cf_residual_value == "" || cf_residual_value.isEmpty())
+// 		{
+// 			cf_residual_value = 0.0;
+// 		}
+// 		cf_depreciation_method = rec.get("cf_depreciation_method");
+// 		cf_balance_life_days = rec.get("cf_balance_life");
+// 		cf_days_lapsed = ifnull(rec.get("cf_days_lapsed"),0);
+// 		cf_net_book_value = ifnull(rec.get("cf_net_book_value"),0);
+// 		if(cf_net_book_value == "")
+// 		{
+// 			cf_net_book_value = 0;
+// 		}
+// 		cf_accu_dep = rec.get("cf_accu_dep");
+// 		date_parts = cf_date_of_acquisition.toList("-");
+// 		dayAcquisition = date_parts.get(2).toNumber();
+// 		monthAcquisition = date_parts.get(1).toNumber();
+// 		yearAcquisition = date_parts.get(0).toNumber();
+// 		month_Depreciation = depMonthNoFormat;
+// 		year_Depreciation = depYear;
+// 		no_Of_Day_Available_For_Depreciation = 0;
+// 		// 		noOfDayInMonth = 0;
+// 		year_Depreciation = year_Depreciation.toNumber();
+// 		yearAcquisition = yearAcquisition.toNumber();
+// 		month_Depreciation = month_Depreciation.toNumber();
+// 		monthAcquisition = monthAcquisition.toNumber();
+// 		// 		if(cf_balance_life_days == "0" || cf_balance_life_days == 0 || cf_balance_life_days == "" || cf_balance_life_days.isNull())
+// 		// 		{
+// 		// 			cf_balance_life_days = 0;
+// 		// 		}
+// 		if(year_Depreciation < yearAcquisition)
+// 		{
+// 			info "Depreciation date must be after Put-to-use Date";
+// 			check = 1;
+// 			checkForPut_to_use_Date = 1;
+// 		}
+// 		else if(year_Depreciation == yearAcquisition && month_Depreciation < monthAcquisition)
+// 		{
+// 			info "Depreciation Month must be after Put-to-use Month";
+// 			check = 1;
+// 			checkForPut_to_use_Date = 1;
+// 		}
+// 		if(monthAcquisition == month_Depreciation && yearAcquisition == year_Depreciation)
+// 		{
+// 			no_Of_Day_Available_For_Depreciation = noOfDayInMonth - dayAcquisition;
+// 		}
+// 		else
+// 		{
+// 			no_Of_Day_Available_For_Depreciation = noOfDayInMonth;
+// 		}
+// 		if(no_Of_Day_Available_For_Depreciation >= cf_balance_life_days)
+// 		{
+// 			no_Of_Day_Available_For_Depreciation = cf_balance_life_days;
+// 		}
+// 		// 		info " ()->> No of Day Available for Depreciation in Month -> " + no_Of_Day_Available_For_Depreciation;
+// 		// ----------------------------------------------------------------------------------------------------------------------------------------
+// 		// 												   Number of Days Available for Depreciation  in Current Month ( Code End At Here )
+// 		// ----------------------------------------------------------------------------------------------------------------------------------------
+// 		// }
+// 		// ----------------------------------------------------------------------------------------------------------------------------------------
+// 		// 												   Main Working Code ( Code Start from Here )
+// 		// ----------------------------------------------------------------------------------------------------------------------------------------
+// 		current_time = zoho.currentdate;
+// 		combine_date = depMonth + "-" + depYear;
+// 		Active = rec.get("cf_asset_status");
+// 		billNumber = rec.get("cf_bill_no_formatted");
+// 		cf_sale_value_formatted = ifnull(rec.get("cf_sale_value_formatted"),0);
+// 		cf_date_of_sale_formatted = ifnull(rec.get("cf_date_of_sale_formatted"),"");
+// 		cf_date_of_scrap_formatted = ifnull(rec.get("cf_date_of_scrap_date_of_lost"),"");
+// 		cf_balance = ifnull(rec.get("cf_balance_life"),"");
+// 		cf_depreciated_amount_check = rec.get("cf_accu_dep").isEmpty();
+// 		cf_depreciated_amount = 0;
+// 		assest_date_put_to_use2_1 = rec.get("cf_asset_date_of_put_to_use");
+// 		cf_useful_life_days = rec.get("cf_useful_life");
+// 		assest_date_put_to_use2_2 = rec.get("cf_asset_date_of_put_to_use").isEmpty();
+// 		// 		cf_asset_code = rec.get("cf_asset_code");
+// 		info check;
+// 		if(check == 0 && assest_date_put_to_use2_2 == false)
+// 		{
+// 			// 						info "record ke andr";
+// 			assest_date_put_to_use2 = assest_date_put_to_use2_1.toString("dd-MMM-yyyy");
+// 			if(cf_depreciated_amount_check == false)
+// 			{
+// 				cf_depreciated_amount = rec.get("cf_accu_dep");
+// 			}
+// 			cf_asset_purchase_amount = ifnull(rec.get("cf_purchase_amount"),0);
+// 			// 			cf_depreciated_amount2 = ifnull(rec.get("cf_accu_dep"),0);
+// 			tests = cf_depreciated_amount;
+// 			if(Active == "Active" && cf_date_of_sale_formatted == "" && cf_date_of_scrap_formatted == "" && cf_sale_value_formatted == "" && cf_balance >= 0 && cf_asset_purchase_amount.toNumber() > tests.toNumber() && cf_net_book_value.toNumber() > 0 && assest_date_put_to_use2.toDate() <= lastDateOfMonth.toDate())
+// 			{
+// 				finalAmount = cf_asset_purchase_amount;
+// 				module_record_id = rec.get("module_record_id");
+// 				rec_balace = rec.get("cf_balance_life");
+// 				record_name = rec.get("cf_asset_serial_no");
+// 				asset_code = rec.get("cf_asset_code");
+// 				assest_name = ifnull(rec.get("record_name"),"");
+// 				assest_status = ifnull(rec.get("cf_asset_status"),"");
+// 				assest_date_put_to_use = ifnull(rec.get("cf_asset_date_of_put_to_use"),"");
+// 				put_to_use_date = assest_date_put_to_use.toString("yyyy-MM-dd");
+// 				depreciation_rate = ifnull(rec.get("cf_dep_rate"),1);
+// 				cf_asset_category = ifnull(rec.get("cf_asset_category"),"");
+// 				cf_depreciation_rundate_month_ = depMonth + "-" + depYear;
+// 				if(cf_accu_dep == "0" || cf_accu_dep == "" || cf_accu_dep == 0 || cf_accu_dep.isNull())
+// 				{
+// 					cf_accu_dep = 0;
+// 				}
+// 				if(cf_accu_dep <= 0.0)
+// 				{
+// 					no_Of_Day_Available_For_Depreciation1 = daysBetween(assest_date_put_to_use,lastDateOfMonth_date);
+// 					if(cf_useful_life_days == "0" || cf_useful_life_days == "" || cf_useful_life_days == 0 || cf_useful_life_days.isNull())
+// 					{
+// 						cf_useful_life_days = 1;
+// 					}
+// 					if(no_Of_Day_Available_For_Depreciation1 > cf_useful_life_days)
+// 					{
+// 						no_Of_Day_Available_For_Depreciation = cf_useful_life_days;
+// 					}
+// 					else
+// 					{
+// 						no_Of_Day_Available_For_Depreciation = no_Of_Day_Available_For_Depreciation1;
+// 					}
+// 				}
+// 				info "No of day Available for Depreciation -> " + no_Of_Day_Available_For_Depreciation;
+// 				//...........................New Calculation (Start from Here)
+// 				info "Final Amt -> " + finalAmount.toDecimal();
+// 				info "No of Day Available -> " + no_Of_Day_Available_For_Depreciation;
+// 				info "Useful life -> " + cf_useful_life_days;
+// 				calculation = 0;
+// 				if(cf_depreciation_method == "SLM")
+// 				{
+// 					info "Inside SLM block";
+// 					calculation = ((finalAmount.toDecimal() - cf_residual_value.toDecimal()) * no_Of_Day_Available_For_Depreciation.toDecimal()) / cf_useful_life_days.toDecimal();
+// 				}
+// 				else
+// 				{
+// 					info "Inside WDV block";
+// 					calculation = ((finalAmount.toDecimal() - cf_accu_dep) * no_Of_Day_Available_For_Depreciation.toDecimal()) / cf_useful_life_days.toDecimal();
+// 				}
+// 				calculation = calculation.round(0);
+// 				// 				per = 95 / 100;
+// 				// 				calDepComAct = (finalAmount.toDecimal() * per * no_Of_Day_Available_For_Depreciation.toDecimal()) / cf_useful_life_days.toDecimal();
+// 				// Condition (when we are on the last month of balance life)
+// 				if(no_Of_Day_Available_For_Depreciation.toNumber() >= cf_balance_life_days.toNumber())
+// 				{
+// 					calculation = cf_net_book_value;
+// 				}
+// 				cf_accumulated_depreciation = cf_accu_dep.toNumber() + calculation.toNumber();
+// 				depreciation_cf_net_book_value = cf_asset_purchase_amount.toNumber() - cf_accumulated_depreciation.toNumber();
+// 				new_map = Map();
+// 				new_map.put("cf_bill_number",billNumber);
+// 				new_map.put("cf_asset_id",module_record_id);
+// 				new_map.put("cf_asset_code",asset_code);
+// 				new_map.put("cf_asset_name",cf_asset_name1);
+// 				new_map.put("cf_date_of_put_to_use",put_to_use_date);
+// 				new_map.put("cf_depreciation_for_current_mo",calculation.toNumber());
+// 				new_map.put("cf_asset_status",assest_status);
+// 				new_map.put("cf_annual_dep_rate",depreciation_rate);
+// 				new_map.put("cf_depreciation_method",cf_depreciation_method);
+// 				new_map.put("cf_asset_category",cf_asset_category);
+// 				new_map.put("cf_purchase_amount",cf_asset_purchase_amount);
+// 				new_map.put("cf_total_useful_life_days",cf_useful_life_days);
+// 				new_map.put("cf_consumed_life_days",no_Of_Day_Available_For_Depreciation);
+// 				new_map.put("cf_depreciation_rundate_month_",lastDateOfMonth);
+// 				new_map.put("cf_accumulated_depreciation",cf_accumulated_depreciation);
+// 				new_map.put("cf_net_book_value",depreciation_cf_net_book_value);
+// 				cf_balance_life_days = cf_useful_life_days.toNumber() - no_Of_Day_Available_For_Depreciation.toNumber();
+// 				create_rec = zoho.books.createRecord("cm_depreciation",organizationID,new_map,"books_far");
+// 				info create_rec;
+// 			}
+// 		}
+// 	}
+// }
+// // 			}
+// // 		}
+// // 	}
+// // }
+// // resultMap = Map();
+// // if(checkForPut_to_use_Date == 0)
+// // {
+// // 	resultMap.put("code",0);
+// // 	resultMap.put("message","Successfully uploaded in the Deprication Module");
+// // }
+// // else
+// // {
+// // 	resultMap.put("code",1);
+// // 	resultMap.put("message","Some Records Have Depreciation Run Date Before of Put-to-use Date, Rest Entries Have Been Posted into Depreciation Module");
+// // }
+// // return resultMap;
+// resultMap = Map();
+// resultMap.put("code",0);
+// resultMap.put("message","Successfully uploaded in the Deprication Module");
+// return resultMap;
+// // }
+// ----------------------------------------------------------------------------------------------------------------------------------
+//  New Code
+// ----------------------------------------------------------------------------------------------------------------------------------
+// **********************************************************************************************
+// ----------------------------------------------------------------------------------------------
+// Testing Purpose Code is below 
+// **********************************************************************************************
+// ----------------------------------------------------------------------------------------------
+organizationID = organization.get("organization_id");
+checkRecord_Present_in_Depreciation = zoho.books.getRecords("cm_depreciation",organizationID,{},"books_far");
+// info checkRecord_Present_in_Depreciation;
+count = 0;
+// if(!checkRecord_Present_in_Depreciation.get("module_records").isEmpty())
+// {
+// 	resultMap = Map();
+// 	resultMap.put("code",1);
+// 	resultMap.put("message","There is Some Entries Already in Depreciation , Delete them First");
+// 	return resultMap;
+// }
+entityID = cm_dep_run_rate.get("module_record_id");
+recdetail = zoho.books.getRecordsByID("cm_dep_run_rate",organizationID,entityID,"books_far");
+// info recdetail;
+module_record_hash = recdetail.get("module_record_hash");
+depMonth = module_record_hash.get("cf_dep_for_month");
+monthname = depMonth;
+depYear = module_record_hash.get("cf_dep_for_year");
+CombineDateCheck = monthname + "-" + depYear;
+// info CombineDateCheck;
+depMonthNoFormat = 0;
+year = depYear;
+// Change this to the desired year
+// Map month names to numbers and last dates of each month
+if(depMonth == "Jan")
+{
+	depMonthNoFormat = 1;
+	lastDateOfMonth = "31-01-" + year;
+}
+else if(depMonth == "Feb")
+{
+	depMonthNoFormat = 2;
+	// Check for leap year to determine last day of February
+	if(year.toNumber() % 4 == 0 && year.toNumber() % 100 != 0 || year.toNumber() % 400 == 0)
+	{
+		lastDateOfMonth = "29-02-" + year;
+		// Leap year
+	}
+	else
+	{
+		lastDateOfMonth = "28-02-" + year;
+		// Non-leap year
+	}
+}
+else if(depMonth == "Mar")
+{
+	depMonthNoFormat = 3;
+	lastDateOfMonth = "31-03-" + year;
+}
+else if(depMonth == "Apr")
+{
+	depMonthNoFormat = 4;
+	lastDateOfMonth = "30-04-" + year;
+}
+else if(depMonth == "May")
+{
+	depMonthNoFormat = 5;
+	lastDateOfMonth = "31-05-" + year;
+}
+else if(depMonth == "Jun")
+{
+	depMonthNoFormat = 6;
+	lastDateOfMonth = "30-06-" + year;
+}
+else if(depMonth == "Jul")
+{
+	depMonthNoFormat = 7;
+	lastDateOfMonth = "31-07-" + year;
+}
+else if(depMonth == "Aug")
+{
+	depMonthNoFormat = 8;
+	lastDateOfMonth = "31-08-" + year;
+}
+else if(depMonth == "Sep")
+{
+	depMonthNoFormat = 9;
+	lastDateOfMonth = "30-09-" + year;
+}
+else if(depMonth == "Oct")
+{
+	depMonthNoFormat = 10;
+	lastDateOfMonth = "31-10-" + year;
+}
+else if(depMonth == "Nov")
+{
+	depMonthNoFormat = 11;
+	lastDateOfMonth = "30-11-" + year;
+}
+else if(depMonth == "Dec")
+{
+	depMonthNoFormat = 12;
+	lastDateOfMonth = "31-12-" + year;
+}
+// info depMonthNoFormat;
+// info lastDateOfMonth;
+lastDateOfMonth_date = lastDateOfMonth.toDate();
+// info lastDateOfMonth_date;
+searchParam_Depreciation = Map();
+searchParam_Depreciation.put("cf_depreciation_rundate_month_",lastDateOfMonth);
+getRecord_Depreciation = zoho.books.getRecords("cm_depreciation",organizationID,searchParam_Depreciation,"books_far");
+info "getRecord_Depreciation -> " + getRecord_Depreciation;
+if(!getRecord_Depreciation.get("module_records").isEmpty())
+{
+	// 	resultMap = Map();
+	// 	resultMap.put("code",1);
+	// 	resultMap.put("message","Entry for This Month-Year Pair already Existing into Depreciation Module");
+	// 	return resultMap;
+}
+Search_dep_log = "";
+Dep_log_records = zoho.books.getRecords("cm_depreciation_log",organizationID,Search_dep_log,"books_far");
+dep_log_module_records = Dep_log_records.get("module_records");
+// info dep_log_module_records;
+isMatched = false;
+for each  log in dep_log_module_records
+{
+	cf_depreciation_run_dates = log.get("cf_depreciation_run_dates");
+	// 	if(lastDateOfMonth == cf_depreciation_run_dates)
+	// 	{
+	// 		isMatched = true;
+	// 	}
+}
+// info "isMatched -> " + isMatched;
+if(isMatched)
+{
+	resultMap = Map();
+	resultMap.put("code",1);
+	resultMap.put("message","Depreciation for this Month-Year pair executed already");
+	return resultMap;
+}
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// _ _ _ _ _   _  _  _  _      Main Code  (Start from Here )  _ _ _ _ _   _  _  _  _     
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+month = depMonthNoFormat;
+year = depYear.toNumber();
+if(month == 1)
+{
+	//       January
+	noOfDayInMonth = 31;
+}
+else if(month == 2)
+{
+	// February
+	if(year.toNumber() % 4 == 0 && year.toNumber() % 100 != 0 || year.toNumber() % 400 == 0)
+	{
+		noOfDayInMonth = 29;
+		// Leap year
+	}
+	else
+	{
+		noOfDayInMonth = 28;
+		// Non-leap year
+	}
+}
+else if(month == 3)
+{
+	// March
+	noOfDayInMonth = 31;
+}
+else if(month == 4)
+{
+	// April
+	noOfDayInMonth = 30;
+}
+else if(month == 5)
+{
+	// May
+	noOfDayInMonth = 31;
+}
+else if(month == 6)
+{
+	// June
+	noOfDayInMonth = 30;
+}
+else if(month == 7)
+{
+	// July
+	noOfDayInMonth = 31;
+}
+else if(month == 8)
+{
+	// August
+	noOfDayInMonth = 31;
+}
+else if(month == 9)
+{
+	// September
+	noOfDayInMonth = 30;
+}
+else if(month == 10)
+{
+	// October
+	noOfDayInMonth = 31;
+}
+else if(month == 11)
+{
+	// November
+	noOfDayInMonth = 30;
+}
+else if(month == 12)
+{
+	// December
+	noOfDayInMonth = 31;
+}
+else
+{
+	noOfDayInMonth = 0;
+	// Invalid month
+}
+// info "noOfDayInMonth -> " + noOfDayInMonth;
+searchParam = Map();
+listPage = {1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
+// listPage = {1};
+count_asset = 0;
+checkForPut_to_use_Date = 0;
+for each  ele in listPage
+{
+	searchParam.put("cf_asset_status_formatted","Active");
+	searchParam.put("page",ele);
+	searchParam.put("per_page","200");
+	data = zoho.books.getRecords("cm_asset_register",organizationID,searchParam,"books_far");
+	// 	   info "data ->  " + data;
+	moduleRecords = data.get("module_records");
+	// 	info moduleRecords;
+	for each  rec in moduleRecords
+	{
+		category = rec.get("cf_asset_category_formatted");
+		if(category == "Goodwill")
+		{
+			info "YES ITS Goodwill";
+			continue;
+		}
+		check = 0;
+		count = count + 1;
+		// 		}
+		// 		depreciation_rate=rec.get("cf_dep_rate");
+		cf_asset_name1 = rec.get("cf_asset_name");
+		cf_date_of_acquisition = rec.get("cf_asset_date_of_put_to_use");
+		cf_residual_value = rec.get("cf_residual_value");
+		if(cf_residual_value == "" || cf_residual_value.isEmpty())
+		{
+			cf_residual_value = 0.0;
+		}
+		cf_depreciation_method = rec.get("cf_depreciation_method");
+		cf_balance_life_days = rec.get("cf_balance_life");
+		cf_days_lapsed = ifnull(rec.get("cf_days_lapsed"),0);
+		cf_net_book_value = ifnull(rec.get("cf_net_book_value"),0);
+		if(cf_net_book_value == "")
+		{
+			cf_net_book_value = 0;
+		}
+		cf_accu_dep = rec.get("cf_accu_dep");
+		cf_accu_dep_wdv = rec.get("cf_accu_dep_wdv");
+		cf_opening_accumulated_balance = rec.get("cf_opening_accumulated_balance");
+		date_parts = cf_date_of_acquisition.toList("-");
+		dayAcquisition = date_parts.get(2).toNumber();
+		monthAcquisition = date_parts.get(1).toNumber();
+		if(monthAcquisition == 4)
+		{
+			continue;
+		}
+		yearAcquisition = date_parts.get(0).toNumber();
+		month_Depreciation = depMonthNoFormat;
+		year_Depreciation = depYear;
+		no_Of_Day_Available_For_Depreciation = 0;
+		//       noOfDayInMonth = 0;
+		year_Depreciation = year_Depreciation.toNumber();
+		yearAcquisition = yearAcquisition.toNumber();
+		month_Depreciation = month_Depreciation.toNumber();
+		monthAcquisition = monthAcquisition.toNumber();
+		//       if(cf_balance_life_days == "0" || cf_balance_life_days == 0 || cf_balance_life_days == "" || cf_balance_life_days.isNull())
+		//       {
+		//          cf_balance_life_days = 0;
+		//       }
+		if(year_Depreciation < yearAcquisition)
+		{
+			// 			info "Depreciation date must be after Put-to-use Date";
+			check = 1;
+			checkForPut_to_use_Date = 1;
+		}
+		else if(year_Depreciation == yearAcquisition && month_Depreciation < monthAcquisition)
+		{
+			// 			info "Depreciation Month must be after Put-to-use Month";
+			check = 1;
+			checkForPut_to_use_Date = 1;
+		}
+		if(monthAcquisition == month_Depreciation && yearAcquisition == year_Depreciation)
+		{
+			// 			info "Consumed Days " + no_Of_Day_Available_For_Depreciation;
+			no_Of_Day_Available_For_Depreciation = noOfDayInMonth - dayAcquisition + 1;
+			// 			info "Consumed Days -> " + no_Of_Day_Available_For_Depreciation;
+			// 			info "-----------------------------------------------------------------";
+		}
+		else
+		{
+			no_Of_Day_Available_For_Depreciation = noOfDayInMonth;
+		}
+		// 		if(no_Of_Day_Available_For_Depreciation.toNumber() >= cf_balance_life_days.toNumber())
+		// 		{
+		// 			no_Of_Day_Available_For_Depreciation = cf_balance_life_days.toNumber();
+		// 		}
+		try 
+		{
+			num1 = no_Of_Day_Available_For_Depreciation.toDecimal();
+			// safer than toNumber()
+			num2 = cf_balance_life_days.toDecimal();
+			if(num1 >= num2)
+			{
+				no_Of_Day_Available_For_Depreciation = num2;
+			}
+		}
+		catch (e)
+		{
+			info "Invalid format detected:";
+			info "no_Of_Day_Available_For_Depreciation: " + no_Of_Day_Available_For_Depreciation;
+			info "cf_balance_life_days: " + cf_balance_life_days;
+			info "Error: " + e.toString();
+		}
+		// 				if(no_Of_Day_Available_For_Depreciation>= cf_balance_life_days())
+		// 		{
+		// 			no_Of_Day_Available_For_Depreciation = cf_balance_life_days.toNumber();
+		// 		}
+		//       info " ()->> No of Day Available for Depreciation in Month -> " + no_Of_Day_Available_For_Depreciation;
+		// ----------------------------------------------------------------------------------------------------------------------------------------
+		//                                        Number of Days Available for Depreciation  in Current Month ( Code End At Here )
+		// ----------------------------------------------------------------------------------------------------------------------------------------
+		// }
+		// ----------------------------------------------------------------------------------------------------------------------------------------
+		//                                        Main Working Code ( Code Start from Here )
+		// ----------------------------------------------------------------------------------------------------------------------------------------
+		current_time = zoho.currentdate;
+		combine_date = depMonth + "-" + depYear;
+		Active = rec.get("cf_asset_status");
+		billNumber = rec.get("cf_bill_no_formatted");
+		cf_sale_value_formatted = ifnull(rec.get("cf_sale_value_formatted"),0);
+		cf_date_of_sale_formatted = ifnull(rec.get("cf_date_of_sale_formatted"),"");
+		cf_date_of_scrap_formatted = ifnull(rec.get("cf_date_of_scrap_date_of_lost"),"");
+		cf_balance = ifnull(rec.get("cf_balance_life"),"");
+		cf_depreciated_amount_check = rec.get("cf_accu_dep").isEmpty();
+		cf_depreciated_amount = 0;
+		assest_date_put_to_use2_1 = rec.get("cf_asset_date_of_put_to_use");
+		cf_useful_life_days = rec.get("cf_useful_life");
+		assest_date_put_to_use2_2 = rec.get("cf_asset_date_of_put_to_use").isEmpty();
+		//       cf_asset_code = rec.get("cf_asset_code");
+		// 		info check;
+		if(check == 0 && assest_date_put_to_use2_2 == false)
+		{
+			//                   info "record ke andr";
+			assest_date_put_to_use2 = assest_date_put_to_use2_1.toString("dd-MMM-yyyy");
+			if(cf_depreciated_amount_check == false)
+			{
+				cf_depreciated_amount = rec.get("cf_accu_dep");
+			}
+			cf_asset_purchase_amount = ifnull(rec.get("cf_purchase_amount"),0);
+			//          cf_depreciated_amount2 = ifnull(rec.get("cf_accu_dep"),0);
+			tests = cf_depreciated_amount;
+			count = count + 1;
+			// 			if(Active == "Active")
+			// 			{
+			// 				// 			count = count + 1;
+			if(Active == "Active" && cf_date_of_sale_formatted == "" && cf_date_of_scrap_formatted == "" && cf_sale_value_formatted == "" && cf_balance >= 0 && cf_asset_purchase_amount.toNumber() > tests.toNumber() && cf_net_book_value.toNumber() > 0 && assest_date_put_to_use2.toDate() <= lastDateOfMonth.toDate())
+			{
+				info "We're inside this condition";
+				finalAmount = cf_asset_purchase_amount;
+				module_record_id = rec.get("module_record_id");
+				rec_balace = rec.get("cf_balance_life");
+				record_name = rec.get("cf_asset_serial_no");
+				asset_code = rec.get("cf_asset_code");
+				assest_name = ifnull(rec.get("record_name"),"");
+				assest_status = ifnull(rec.get("cf_asset_status"),"");
+				assest_date_put_to_use = ifnull(rec.get("cf_asset_date_of_put_to_use"),"");
+				put_to_use_date = assest_date_put_to_use.toString("yyyy-MM-dd");
+				depreciation_rate = ifnull(rec.get("cf_dep_rate"),1);
+				// 				depreciation_rate=rec.get("cf_dep_rate");
+				cf_asset_category = ifnull(rec.get("cf_asset_category"),"");
+				cf_depreciation_rundate_month_ = depMonth + "-" + depYear;
+				// 				if(cf_accu_dep == "0" || cf_accu_dep == "" || cf_accu_dep == 0 || cf_accu_dep.isNull())
+				// 				{
+				// 					cf_accu_dep = 0;
+				// 				}
+				if(cf_accu_dep_wdv == "0" || cf_accu_dep_wdv == "" || cf_accu_dep_wdv == 0 || cf_accu_dep_wdv.isNull())
+				{
+					cf_accu_dep_wdv = 0;
+				}
+				if(cf_opening_accumulated_balance == "0" || cf_opening_accumulated_balance == "" || cf_opening_accumulated_balance == 0 || cf_opening_accumulated_balance.isNull())
+				{
+					cf_opening_accumulated_balance = 0;
+				}
+				if(cf_accu_dep_wdv <= 0.0)
+				{
+					no_Of_Day_Available_For_Depreciation1 = daysBetween(assest_date_put_to_use,lastDateOfMonth_date) + 1;
+					if(cf_useful_life_days == "0" || cf_useful_life_days == "" || cf_useful_life_days == 0 || cf_useful_life_days.isNull())
+					{
+						cf_useful_life_days = 1;
+					}
+					if(no_Of_Day_Available_For_Depreciation1 > cf_useful_life_days)
+					{
+						no_Of_Day_Available_For_Depreciation = cf_useful_life_days;
+					}
+					else
+					{
+						no_Of_Day_Available_For_Depreciation = no_Of_Day_Available_For_Depreciation1;
+					}
+				}
+				// 				info "LIne 787 - No of day Available for Depreciation -> " + no_Of_Day_Available_For_Depreciation;
+				//...........................New Calculation (Start from Here)
+				// 				info "Final Amt -> " + finalAmount.toDecimal();
+				// 				info "No of Day Available -> " + no_Of_Day_Available_For_Depreciation;
+				// 				info "Useful life -> " + cf_useful_life_days;
+				calculation = 0;
+				calculation_WDV = 0;
+				// if(cf_depreciation_method == "SLM")
+				// {
+				// info "Inside SLM block";
+				// 				calculation = (finalAmount.toDecimal() * no_Of_Day_Available_For_Depreciation.toDecimal()) / cf_useful_life_days.toDecimal();
+				// 				info "Final Amount " + finalAmount;
+				// }
+				// else
+				// {
+				// info "Inside WDV block";
+				// 				calculation_WDV = ((finalAmount.toDecimal() - cf_accu_dep_wdv) * no_Of_Day_Available_For_Depreciation.toDecimal()) / cf_useful_life_days.toDecimal();
+				// 				info "DEPRECIATION RATE ---- " + depreciation_rate;
+				// 				info "No of days available for Depreciation " + no_Of_Day_Available_For_Depreciation;
+				// 				info "Opening Accumulated Balance " + cf_opening_accumulated_balance;
+				// 								info "final Amount " + finalAmount.toDecimal();
+				// 								info "Opening Accumulated Depreciation " + cf_opening_accumulated_balance.toDecimal();
+				// 				val=(finalAmount.toDecimal() - cf_opening_accumulated_balance);
+				info "---------------------------------------------------";
+				info "Put to use date " + assest_date_put_to_use;
+				info "Consumed Days - > " + no_Of_Day_Available_For_Depreciation;
+				info "Opening Accumulated Balance --> " + cf_opening_accumulated_balance;
+				info "-------------------------------------------------";
+				calculation_WDV = ((finalAmount.toDecimal() - cf_opening_accumulated_balance.toDecimal()) * no_Of_Day_Available_For_Depreciation.toDecimal() * depreciation_rate) / 36500;
+				info "Calculation WDV " + calculation_WDV;
+				calculation_WDV = calculation_WDV.round(2);
+				final_accu_dep = cf_accu_dep_wdv + calculation_WDV;
+				// 				
+				// 				*Depreciation_rate;depreciation_rate.toDecimal()
+				// 				info "CALCULATION OF WDV -----------------> " + calculation_WDV;
+				// }
+				//-------------------------------------------------------------------------------------------------------------------
+				// 								info "final AMount -> " + finalAmount;
+				// 								info "cf_accu_dep_wdv -> " + cf_accu_dep_wdv;
+				// 								info "depreciation_rate -> " + depreciation_rate;
+				// 								info "no_Of_Day_Available_For_Depreciation -> " + no_Of_Day_Available_For_Depreciation;
+				// 								info "calculation_WDV -> " + calculation_WDV;
+				// 								info "Diff  -> " + (finalAmount - cf_accu_dep_wdv);
+				// 								info "Re-Diff  -> " + ((finalAmount.toDecimal() - cf_accu_dep_wdv.toDecimal()) * depreciation_rate * no_Of_Day_Available_For_Depreciation.toDecimal());
+				// 								info "cf_accu_dep_wdv -> " + cf_accu_dep_wdv;
+				//-------------------------------------------------------------------------------------------------------------------
+				// 				calculation = calculation.round(0);
+				// 				calculation_WDV1 = calculation_WDV.round(0);
+				//             per = 95 / 100;
+				//             calDepComAct = (finalAmount.toDecimal() * per * no_Of_Day_Available_For_Depreciation.toDecimal()) / cf_useful_life_days.toDecimal();
+				// Condition (when we are on the last month of balance life)
+				val1Text = ifnull(no_Of_Day_Available_For_Depreciation,"0").toString().replaceAll("[^0-9.]","");
+				val2Text = ifnull(cf_balance_life_days,"0").toString().replaceAll("[^0-9.]","");
+				// Final fallback to "0" if string is empty after cleanup
+				val1Text = ifnull(no_Of_Day_Available_For_Depreciation,"0").toString().replaceAll("[^0-9.]","");
+				val2Text = ifnull(cf_balance_life_days,"0").toString().replaceAll("[^0-9.]","");
+				// Safe fallback without ternary
+				if(val1Text == "")
+				{
+					val1Text = "0";
+				}
+				if(val2Text == "")
+				{
+					val2Text = "0";
+				}
+				val1 = val1Text.toDecimal();
+				val2 = val2Text.toDecimal();
+				if(val1 >= val2)
+				{
+					// 				if(no_Of_Day_Available_For_Depreciation.toNumber() >= cf_balance_life_days.toNumber())
+					// 				{
+					// 					calculation = cf_net_book_value;
+					// 					calculation_WDV = cf_net_book_value;
+				}
+				// 				cf_accumulated_depreciation = cf_accu_dep.toNumber() + calculation.toNumber();
+				// 				cf_accumulated_depreciation_WDV = cf_accu_dep_wdv.toNumber() + calculation_WDV.toNumber();
+				// 				depreciation_cf_net_book_value = cf_asset_purchase_amount.toNumber() - cf_accumulated_depreciation.toNumber();
+				// 				info "Purchase Amount " + cf_asset_purchase_amount;
+				// 				info "calculation_WDV ----> " + calculation_WDV;
+				new_map = Map();
+				new_map.put("cf_bill_number",billNumber);
+				new_map.put("cf_asset_id",module_record_id);
+				new_map.put("cf_asset_code",asset_code);
+				new_map.put("cf_asset_name",cf_asset_name1);
+				new_map.put("cf_date_of_put_to_use",put_to_use_date);
+				// 				new_map.put("cf_depreciation_for_current_mo",calculation.toNumber());
+				new_map.put("cf_depreciation_for_current_mo_1",calculation_WDV);
+				new_map.put("cf_accumulated_depreciation",final_accu_dep);
+				new_map.put("cf_asset_status",assest_status);
+				new_map.put("cf_annual_dep_rate",depreciation_rate);
+				// 				new_map.put("cf_depreciation_method",cf_depreciation_method);
+				new_map.put("cf_asset_category",cf_asset_category);
+				new_map.put("cf_purchase_amount",cf_asset_purchase_amount);
+				new_map.put("cf_total_useful_life_days",cf_useful_life_days);
+				new_map.put("cf_consumed_life_days",no_Of_Day_Available_For_Depreciation);
+				// 				info "No of day available for Depreciation " + no_Of_Day_Available_For_Depreciation;
+				new_map.put("cf_depreciation_rundate_month_",lastDateOfMonth);
+				// 				new_map.put("cf_accumulated_depreciation",cf_accumulated_depreciation);
+				// 				new_map.put("cf_net_book_value",depreciation_cf_net_book_value);
+				cf_balance_life_days = cf_useful_life_days.toNumber() - no_Of_Day_Available_For_Depreciation.toNumber();
+				// 				count_asset=count_asset+1;
+				create_rec = zoho.books.createRecord("cm_depreciation",organizationID,new_map,"books_far");
+				info create_rec;
+			}
+		}
+	}
+	// info "Count value " + count_asset;
+}
+info "count " + count;
+resultMap = Map();
+resultMap.put("code",0);
+resultMap.put("message","Successfully uploaded in the Deprication Module");
+return resultMap;
