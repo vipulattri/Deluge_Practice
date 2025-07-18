@@ -1,0 +1,16 @@
+if (input.Total_MTR_Required != null)
+{
+  data = collection();
+operationsList = List();
+operationsList = {1};
+    for each row in operationsList
+    {
+		row1 = Costing_Sheet.Operations();
+        time = ((input.Total_MTR_Required / 30) / 60).round(2);
+        row1.Running_Time_hours = time.toString(); // convert decimal to string
+		data.insert(row1);
+		input.Operations.insert(data);
+		
+    }
+	
+}
