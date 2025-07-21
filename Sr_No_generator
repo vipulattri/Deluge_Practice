@@ -1,0 +1,12 @@
+max_sr_no = 0;
+// Find the maximum S_No from existing records
+for each  record in input.BOQ_Material
+{
+	if(record.S_No1 > max_sr_no)
+	{
+		max_sr_no = record.S_No1;
+	}
+	new_sr_no = max_sr_no + 1;
+}
+row.S_No1=new_sr_no;
+disable row.S_No1;
