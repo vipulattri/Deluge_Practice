@@ -1,0 +1,30 @@
+clear Machine;
+if(input.Operation == "Printing")
+{
+	input.Work_Centers:ui.add("Hontec - 8");
+	input.Work_Centers:ui.add("Weigang - 8");
+	input.Work_Centers:ui.add("Weigang - 7");
+}
+else if(input.Operation == "Die Punching")
+{
+	input.Work_Centers:ui.add("WQM-320 - Flatbed");
+}
+else if(input.Operation == "Seaming")
+{
+	input.Work_Centers:ui.add("Seaming Machine");
+}
+else if(input.Operation == "Cutting")
+{
+	input.Work_Centers:ui.add("Karville");
+}
+else if(input.Operation == "Slitting")
+{
+	input.Work_Centers:ui.add("DABA - 350");
+	input.Work_Centers:ui.add("DK - 320");
+	input.Work_Centers:ui.add("Hontec-350");
+}
+else if(input.Operation == "Manual Work")
+{
+	input.Work_Centers:ui.add("Packing");
+	input.Work_Centers:ui.add("Rewinding");
+}
