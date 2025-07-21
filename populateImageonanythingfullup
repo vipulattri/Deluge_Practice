@@ -1,0 +1,25 @@
+windingDirection = input.Winding_Direction.toDecimal();
+if(windingDirection == 4)
+{
+	url = "https://previewengine-accl.zoho.com/image/WD/8r0q8524c09d8d3d3402585bf10e9b685db3b?version=1.0&width=2046&height=1536";
+	input.Image = "<img src=\"" + url + "\" />";
+}
+else if(windingDirection == 3)
+{
+	url = "https://previewengine-accl.zoho.com/image/WD/8r0q81d99041899b649ac96248ee0286e9878?version=1.0&width=2046&height=1536";
+	input.Image = "<img src=\"" + url + "\" />";
+}
+else if(windingDirection == 2)
+{
+	url = "https://i.postimg.cc/mk74RPkM/fortunelabel2.png";
+	input.Image = "<img src=\"" + url + "\" />";
+}
+else if(windingDirection == 1)
+{
+	url = "https://i.postimg.cc/cHgZ99NF/fortunelabel1.png";
+	input.Image = "<img src=\"" + url + "\" />";
+}
+else
+{
+	input.Image = "";
+}
