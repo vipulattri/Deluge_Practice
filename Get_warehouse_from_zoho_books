@@ -1,0 +1,45 @@
+string getwarehouse()
+{
+	// 	itemsList = List();
+	// 	listPage = {1,2,3,4};
+	// 	for each  ele in listPage
+	// 	{
+	resp = invokeurl
+	[
+		url :"https://www.zohoapis.com/inventory/v1/settings/warehouses?organization_id=849813778"
+		type :GET
+		connection:"inventory"
+	];
+	// 		info resp;
+	for each  ele1 in resp.get("warehouses")
+	{
+		warehouse = Warehouse_Master[Warehouse_ID == ele1.get("warehouse_id")];
+		if(warehouse.count() > 0)
+		{
+		}
+		else
+		{
+			B = insert into Warehouse_Master
+			[
+				Added_User=zoho.loginuser
+				Warehouse_Name=ele1.get("warehouse_name")
+				Address.address_line_1=ele1.get("address1")
+				Address.address_line_2=ele1.get("address2")
+				Address.state_province=ele1.get("state")
+				Address.postal_Code=ele1.get("state_code")
+				Address.country=ele1.get("country")
+				Warehouse_ID=ele1.get("warehouse_id")
+				Branch=ele1.get("branch_name")
+				Email=ele1.get("email")
+				Branch_Id=ele1.get("branch_id")
+			];
+			info B;
+		}
+	}
+	// 		if(resp.get("page_context").get("has_more_page") != true)
+	// 		{
+	// 			break;
+	// 		}
+	// 	}
+	return "Success";
+}
