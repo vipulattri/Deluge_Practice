@@ -1,0 +1,47 @@
+string GetItems()
+{
+	itemsList = List();
+	listPage = {1,2,3,4};
+	delete from Master_Items_Details[ID != 0];
+	for each  ele in listPage
+	{
+		resp = invokeurl
+		[
+			url :"https://www.zohoapis.com/inventory/v1/items?filter_by=Status.Active&page=" + ele + "&per_page=170&organization_id=849813778"
+			type :GET
+			connection:"inventory"
+		];
+		info resp;
+		for each  ele1 in resp.get("items")
+		{
+			product = Master_Items_Details[Items_id == ele1.get("item_id")];
+			if(product.count() > 0)
+			{
+			}
+			else
+			{
+				info ele1.get("name");
+				B = insert into Master_Items_Details
+				[
+					Added_User=zoho.loginuser
+					Items_id=ele1.get("item_id")
+					Item_Code=ele1.get("sku")
+					Items=ele1.get("name")
+					Unit=ele1.get("unit")
+					Quantity=ele1.get("quantity")
+					Unit_Price=ele1.get("rate")
+					MRV_No=ele1.get("cf_mrv_no")
+					Value_Basis_6_Month_Weighted_Average_Cost=ele1.get("cf_value_basis_6_month_weighte")
+					Color=ele1.get("cf_color")
+					Brand=ele1.get("brand")
+				];
+				info B;
+			}
+		}
+		if(resp.get("page_context").get("has_more_page") != true)
+		{
+			break;
+		}
+	}
+	return "Success";
+}
