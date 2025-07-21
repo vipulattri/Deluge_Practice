@@ -1,0 +1,23 @@
+void Get_Sales_Person_from_CRM()
+{
+	// Replace 'Leads' with your actual module name in CRM
+	response = zoho.crm.getRecords("Sales_Person");
+	// Optional: Loop through the response and log the data
+	for each  record in response
+	{
+		info "Sales Person: " + record.get("Name");
+		info "Sales Person Email: " + record.get("Email");
+		// Add more fields as needed
+	}
+	// You can also insert this data into a Creator form if needed
+	for each  record in response
+	{
+		abc = insert into Sales_Person_Master
+		[
+			Sales_Person_name=record.get("Name")
+			Sales_Person_Email=record.get("Email")
+			Added_User=zoho.loginuser
+		];
+		info abc;
+	}
+}
