@@ -1,0 +1,15 @@
+// if(input.Winding_Direction != null)
+// {
+// 	dir = Image_Winding[Winding_Direction == input.Winding_Direction];
+// 	input.Image = dir.Image;
+// 	input.hfhf = dir.Image;
+// }
+displayimg = Image_Winding[Winding_Direction == input.Winding_Direction].Image;
+if(displayimg != null)
+{
+	displayimg = displayimg.replaceAll("/sharedBy/appLinkName/",zoho.appuri);
+	displayimg = displayimg.replaceAll("viewLinkName","All_Image_Windings");
+	displayimg = displayimg.replaceAll("fieldName","Image");
+	displayimg = displayimg.replaceAll("<img","<img height=100px width=100px margin-left=20px");
+}
+input.plain = displayimg;
