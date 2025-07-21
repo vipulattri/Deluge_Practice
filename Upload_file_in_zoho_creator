@@ -1,0 +1,73 @@
+void Upload_File(int ID)
+{
+	// 	data = Job_Order[ID == input.ID];
+	// 	data1 = Quotation[ID == input.ID];
+	// 	customer_Approval = data1.Customer_Approval1;
+	// 	project_name = data.Project_Name;
+	// 	descrip = data.Description;
+	// 	template = data.Select_Template;
+	// 	mp = Map();
+	// 	// 	if(customer_Approval == "Approved")
+	// 	// 	{
+	// 	// 		if(template=="Commercial Building Renovation"){
+	// 	// 			mp.put("name",project_name);
+	// 	// 		    mp.put("public","yes");
+	// 	// 		    mp.put("Desc",descrip);
+	// 	// 		    mp.put("template_id","2071733000002026005");
+	// 	// 		    create_project = invokeurl
+	// 	// 		     [
+	// 	// 			    url :" https://projectsapi.zoho.com/restapi/portal/gauravheliostechlabsdotcom/projects/"
+	// 	// 			    type :POST
+	// 	// 			    parameters:mp
+	// 	// 			     connection:"zoho_projects_connection"
+	// 	// 		     ];
+	// 	// 		     info create_project;
+	// 	// 		 
+	// 	// 	}	
+	// 	if(template == "Custom Door Installation")
+	// 	{
+	// 		mp.put("name",project_name);
+	// 		mp.put("public","yes");
+	// 		mp.put("Desc",descrip);
+	// 		mp.put("template_id","2071733000002027001");
+	// 		create_project = invokeurl
+	// 		[
+	// 			url :" https://projectsapi.zoho.com/restapi/portal/gauravheliostechlabsdotcom/projects/"
+	// 			type :POST
+	// 			parameters:mp
+	// 			connection:"zoho_projects_connection"
+	// 		];
+	// 		info "hello";
+	// 		info create_project;
+	// 	}
+	// // Fetch the Quotation data
+	data = Quotation[ID == input.ID];
+	// ++++++++++++Direct Document create of Quotation ++++++++++++++++++++++++
+	// Generate the PDF URL
+	exportPDF = invokeurl
+	[
+		url :"https://creatorapp.zohopublic.com/ajaypartap/idealfitout/pdf/Quotation1/EumC4t7hej4Sn647bfkyu95ugQd0HHhMDKq2AeENnnmD3AeCy6yb1rmqWZvjKOrgGOvnBjKQ81gFneR8Z70ShCEbfBaPy9ng4ZBn?isc5page=true&RecID=" + input.ID
+		type :GET
+	];
+	file = encodeUrl(exportPDF.getFileName());
+	dataMap = Map();
+	// Prepare the data for Zoho Sign API
+	//     dataMap = Map();
+	//     dataMap.put("file_data", encodeUrl(exportPDF.getFileName())); // Attach the generated PDF
+	//     dataMap.put("template_id", "327947000000160001"); // Replace with your template ID
+	// Add recipient details as a map
+	signer = Map();
+	signer.put("recipient_name","John");
+	// Replace with dynamic customer name if needed
+	signer.put("recipient_email","aditya.heliostech@gmail.com");
+	// Replace with dynamic email if needed
+	signer.put("action","SIGN");
+	response = zoho.sign.createDocument(exportPDF,signer);
+	info response;
+	//     requests = response.getJSON("requests");
+	//   // info requests;
+	// document_Id = requests.getJSON("request_id");
+	// // info document_id;
+	//   data.Document_Id=document_Id.toNumber();
+	info "Successfull Send For E-Signature";
+}
