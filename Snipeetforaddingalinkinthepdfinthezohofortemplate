@@ -1,0 +1,232 @@
+<%{
+	data = Packing_Slip[ID == input.RecId];
+	%>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Packing Slip</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm;
+      @bottom-right {
+        content: "Page " counter(page) "of " counter(pages);
+      }
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      color: #000;
+    }
+    .z-container {
+      padding: 20px;
+    }
+    .z-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    .z-td, .z-th {
+      border: 1px solid black;
+      padding: 6px;
+      word-wrap: break-word;
+      vertical-align: top;
+    }
+    .z-tdd {
+      padding: 6px;
+      word-wrap: break-word;
+      vertical-align: top;
+    }
+    .z-no-border {
+      border: none;
+    }
+    .z-center {
+      text-align: center;
+    }
+    .z-left {
+      text-align: left;
+    }
+    .z-logo {
+      max-height: 80px;
+      width: 250px;
+    }
+    .z-header-text {
+      text-align: right;
+      padding-left: 20px;
+      margin-right: 40px; /* shifted a bit towards center */
+    }
+    .z-section-title {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="z-container">
+
+<!-- Header -->
+<table class="z-table" style="margin-bottom: 10px;">
+  <tr>
+    <td class="z-tdd" style="width: 50%;">
+      <img src="https://i.ibb.co/WWM4dvS3/appaccount-normal-1.png" alt="Logo" class="z-logo">
+    </td>
+     <td class="z-tdd z-header-text">
+      <!-- Wrap the content in a left-aligned inner div -->
+      <div style="text-align: left;">
+        <div style="font-size: 16px; font-weight: bold;">AUMA Saudi Manufacturing Company</div>
+        <div style="font-size: 13px;">PO BOX NO: 34532</div>
+        <div style="font-size: 12px;">
+          12th Street, 2nd Industrial City, Dammam 34334,<br>
+          Kingdom of Saudi Arabia<br>
+          Phone: +966138145707
+        </div>
+      </div>
+    </td>
+  </tr>
+</table>
+
+<!-- Packing Slip Info -->
+<table class="z-table">
+  <tr>
+    <td class="z-no-border">
+      <div style="font-size:16px; font-weight:bold; text-align: center;">PACKING SLIP</div>
+      <div>Date: <%=data.Date_field%></div>
+      <div>Customer Id: <%=data.Name.Customer_Id%></div>
+      <div>Packing Slip No: <%=data.Packing_Slip_No%></div>
+    </td>
+  </tr>
+</table>
+
+<!-- Bill To / Ship To -->
+<table class="z-table z-no-border" style="margin-top: 10px;">
+  <tr>
+    <td class="z-no-border" style="width: 50%; vertical-align: top;">
+      <strong>Bill To:</strong>
+      <table style="width: 100%; border: none;">
+        <tr><td>Name  :</td><td><%=data.Name.Customer_Name%></td></tr>
+        <tr><td>PO Box No.  :</td><td><%=data.PO_Box_No%></td></tr>
+        <tr><td>Street No.  :</td><td><%=data.Street%></td></tr>
+        <tr><td>Phone  :</td><td><%=data.Phone_Number%></td></tr>
+        <tr><td>Contact Person  :</td><td><%=data.Contact_Person%></td></tr>
+        <tr><td>Email  :</td><td><%=data.Email1%></td></tr>
+      </table>
+    </td>
+    <td class="z-no-border" style="vertical-align: top;">
+      <strong>Ship To:</strong>
+      <table style="width: 100%; border: none;">
+        <tr><td>PO Box No.  :</td><td><%=data.Pono%></td></tr>
+        <tr><td>Street No.  :</td><td><%=data.Street_N%></td></tr>
+        <tr><td>Phone  :</td><td><%=data.Phone_Number1%></td></tr>
+        <tr><td>Contact Person  :</td><td><%=data.Contact_Person1%></td></tr>
+        <tr><td>Email  :</td><td><%=data.Email%></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<!-- Order and Contacts Info -->
+<table class="z-table" style="margin-top: 10px;">
+  <tr>
+    <th class="z-th">CUSTOMER PO#</th>
+    <th class="z-th">CUSTOMER CONTACT#1</th>
+    <th class="z-th">CUSTOMER CONTACT#2</th>
+  </tr>
+<%
+	for each  da in data.Customer
+	{
+		%>
+<tr>
+    <td class="z-td" style="font-size: 10px;"><%=da.Purchase_Order.SO_No%></td>
+    <td class="z-td" style="font-size: 10px;"><%=da.Customer_Name.Customer_Name%></td>
+    <td class="z-td" style="font-size: 10px;"><%=da.Customer_PO_Number%></td>
+  </tr>
+<%
+	}
+	%>
+</table>
+
+<!-- Item Info -->
+<table class="z-table" style="margin-top: 10px;">
+  <tr>
+  	<th class="z-th">HSN Code</th>
+    <th class="z-th">PO ITEM #</th>
+    <th class="z-th">ORDER #</th>
+    <th class="z-th">Description</th>
+	<th class="z-th">Tag Number</th>
+    <th class="z-th">Order Qty</th>
+    <th class="z-th">Ship Qty</th>
+  </tr>
+<%
+	for each  dat in data.Material_Details
+	{
+		%>
+<tr>
+  <td class="z-td" style="font-size: 10px;"><%=dat.HS_Code%></td>
+    <td class="z-td" style="font-size: 10px;"><%=dat.PO_item%></td>
+    <td class="z-td" style="font-size: 10px;"><%=dat.ORDER%></td>
+    <td class="z-td" style="font-size: 10px;"><%=dat.Description%></td>
+	<td class="z-td" style="font-size: 10px;"><%=dat.Tag_Number%></td>
+    <td class="z-td" style="font-size: 10px;"><%=dat.Order_Qty%></td>
+    <td class="z-td" style="font-size: 10px;"><%=dat.Ship_Qty%></td>
+  </tr>
+<%
+	}
+	%>
+</table>
+
+<!-- Totals -->
+<table class="z-table" style="margin-top: 10px;">
+  <tr>
+    <td class="z-no-border"><strong>Total Order Qty:</strong> <%=data.Total_Order_Qty%></td>
+    <td class="z-no-border"><strong>Total Ship Qty:</strong> <%=data.Total_Ship_Qty%></td>
+  </tr>
+</table>
+
+<!-- Box Info -->
+<table class="z-table" style="margin-top: 10px;">
+  <tr>
+    <th class="z-th">Box No.</th>
+    <th class="z-th">Carton Dimension (CM)</th>
+    <th class="z-th">Net Weight (Kg)</th>
+    <th class="z-th">Gross Weight (Kg)</th>
+  </tr>
+<%
+	for each  datt in data.Packaging_Details
+	{
+		%>
+<tr>
+    <td class="z-td" style="font-size: 10px;"><%=datt.Box_n%></td>
+    <td class="z-td" style="font-size: 10px;"><%=datt.Carton_Dimension_CM%></td>
+    <td class="z-td" style="font-size: 10px;"><%=datt.Net_Weight_Kg%></td>
+    <td class="z-td" style="font-size: 10px;"><%=datt.Gross_Weight_Kg%></td>
+  </tr>
+<%
+	}
+	%>
+</table>
+
+<!-- Total Weight -->
+<table class="z-table" style="margin-top: 10px;">
+  <tr>
+    <td class="z-no-border"><strong>Total Net Weight (Kg):</strong> <%=data.Total_Net_Weight_Kg%></td>
+    <td class="z-no-border"><strong>Total Gross Weight (Kg):</strong> <%=data.Total_Gross_Qty%></td>
+  </tr>
+</table>
+
+<!-- Remarks (NO BORDER NOW) -->
+<div style="margin-top: 20px; padding: 10px;">
+  <strong style="font-size: 14px;">Remarks / Comments:</strong>
+  <div style="margin-top: 5px; white-space: pre-wrap; font-size: 13px;">
+    <%=data.Remark_Comments%>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
+<%
+
+}%>
