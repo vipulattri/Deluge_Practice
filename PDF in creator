@@ -1,0 +1,1 @@
+openUrl("https://creatorapp.zoho.com/aumaorg2023/manufacturing-application-version-2/#Page:Packing_Slip_Template?RecId=" + input.ID,"new window");
