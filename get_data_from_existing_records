@@ -1,0 +1,10 @@
+asset_code_entered = input.Asset_Code;
+
+// Use the actual form name instead of the report name
+existing_requests = Asset_Requests[Asset_Code == asset_code_entered];
+
+if(existing_requests.count() > 0)
+{
+    alert "This Asset Code is already assigned.";
+    cancel submit;
+}
