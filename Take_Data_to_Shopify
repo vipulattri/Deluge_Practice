@@ -1,0 +1,6 @@
+products_response = invokeurl
+[
+    url: "https://lili-pepper.myshopify.com/admin/api/2025-04/products.json?limit=250&page=1"
+    type: GET
+    connection: "shopify_connection"
+];
