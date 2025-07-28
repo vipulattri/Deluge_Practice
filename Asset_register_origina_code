@@ -1,0 +1,93 @@
+
+entityID = cm_asset_register.get("module_record_id");
+organizationID = organization.get("organization_id");
+// asset_register = zoho.books.getRecordsByID("cm_asset_register",organizationID,entityID,"zoho_books");
+// info asset_register;
+// asset = asset_register.get("module_record_hash");
+asset_code = cm_asset_register.get("cf_asset_code");
+asset_name = cm_asset_register.get("cf_asset_name");
+asset_category = cm_asset_register.get("cf_asset_category_formatted");
+asset_status = cm_asset_register.get("cf_asset_status");
+asset_date_of_put_to_use = cm_asset_register.get("cf_asset_date_of_put_to_use").toDate("yyyy-MM-dd").toString("dd-MMM-yyyy");
+asset_serial_no = cm_asset_register.get("cf_asset_serial_no");
+bill_no = cm_asset_register.get("cf_bill_no_formatted");
+dep_rate = cm_asset_register.get("cf_dep_rate");
+purchase_date = cm_asset_register.get("cf_purchase_date").toDate("yyyy-MM-dd").toString("dd-MMM-yyyy");
+net_book_value = cm_asset_register.get("cf_net_book_value");
+useful_life_days = cm_asset_register.get("cf_useful_life");
+days_lapsed = cm_asset_register.get("cf_days_lapsed");
+balance_life = cm_asset_register.get("cf_balance_life");
+useful_life_exhausted = cm_asset_register.get("cf_useful_life_exhausted");
+last_dep_till_month = cm_asset_register.get("cf_last_dep_till_month_year");
+depreciaton = cm_asset_register.get("cf_depreciation");
+accu_dep = cm_asset_register.get("cf_accu_dep_wdv");
+expiry_date_of_asset = cm_asset_register.get("cf_expiry_date_of_asset").toDate("yyyy-MM-dd").toString("dd-MMM-yyyy");
+info expiry_date_of_asset;
+location = cm_asset_register.get("cf_location_formatted");
+purchase_amount = cm_asset_register.get("cf_purchase_amount");
+residual_value = cm_asset_register.get("cf_residual_value");
+supplier_name = cm_asset_register.get("cf_supplier_name");
+asset_sub_cat = cm_asset_register.get("cf_sub_category_formatted");
+info asset_sub_cat;
+location_asset_code = cm_asset_register.get("cf_location_asset_code");
+date_of_sale = cm_asset_register.get("cf_date_of_sale");
+date_of_scrap = cm_asset_register.get("cf_date_of_scrap_date_of_lost");
+sale_value = cm_asset_register.get("cf_sale_value");
+// url = "https://barcode.tec-it.com/barcode.ashx?data=" + asset_code + "&translate-esc=on";
+// asset_bar_code = "<img src=\"" + url + "\" />";
+createMap = Map();
+createMap.put("Asset_Code",asset_code);
+createMap.put("Asset_Name",asset_name);
+createMap.put("Asset_Category",asset_category);
+createMap.put("Asset_Sub_Category",asset_sub_cat);
+if(!depreciaton.isNull() && !depreciaton.isEmpty())
+{
+	createMap.put("Depreciation",depreciaton.round(2));
+}
+createMap.put("Asset_Status",asset_status);
+createMap.put("Asset_Date_of_Put_to_use",asset_date_of_put_to_use);
+if(!asset_serial_no.isNull() && !asset_serial_no.isEmpty())
+{
+	createMap.put("Asset_Serial_No",asset_serial_no);
+}
+createMap.put("Bill_no",bill_no);
+createMap.put("Supplier_Name",supplier_name);
+createMap.put("Dep_Rate",dep_rate);
+createMap.put("Purchase_Amount",purchase_amount);
+createMap.put("Residual_Value",residual_value.round(2));
+createMap.put("Purchase_Date",purchase_date);
+createMap.put("Net_Book_Value",net_book_value.round(2));
+createMap.put("Useful_life_Days",useful_life_days);
+if(!days_lapsed.isNull() && !days_lapsed.isEmpty())
+{
+	createMap.put("Days_Lapsed",days_lapsed);
+}
+createMap.put("Balance_Life_Days",balance_life);
+if(!useful_life_exhausted.isNull() && !useful_life_exhausted.isEmpty())
+{
+	createMap.put("Useful_Life_Exhausted",useful_life_exhausted);
+}
+if(!last_dep_till_month.isNull() && !last_dep_till_month.isEmpty())
+{
+	createMap.put("Last_Dep_till_Month_Year",last_dep_till_month);
+}
+if(!accu_dep.isNull() && !accu_dep.isEmpty())
+{
+	createMap.put("Accu_Dep_WDV",accu_dep.round(2));
+}
+createMap.put("Expiry_Date_of_Asset",expiry_date_of_asset);
+createMap.put("Location",location);
+createMap.put("Location_Asset_Code",location_asset_code);
+if(!date_of_sale.isNull() && !date_of_sale.isEmpty())
+{
+	createMap.put("Date_of_Sale",date_of_sale.toDate("yyyy-MM-dd").toString("dd-MMM-yyyy"));
+	createMap.put("Sale_Value",sale_value);
+}
+if(!date_of_scrap.isNull() && !date_of_scrap.isEmpty())
+{
+	createMap.put("Date_of_Scrap_Date_of_Lost",date_of_scrap.toDate("yyyy-MM-dd").toString("dd-MMM-yyyy"));
+}
+// createMap.put("Asset_BarCode",asset_bar_code);
+it = Map();
+response = zoho.creator.createRecord("nishant.bangera_omnenest","asset-tracking","Asset_Master",createMap,it,"creator");
+info response;
