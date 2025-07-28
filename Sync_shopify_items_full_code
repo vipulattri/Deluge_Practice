@@ -1,0 +1,110 @@
+string SyncItems()
+{
+	// 	latestRecord = Item_Master[ID != 0] sort by ID desc limit 1;
+	latestRecord = Item_Master[ID != 0] sort by ID Desc range from 0 to 0;
+	totalRecord = Item_Master[ID != 0];
+	info totalRecord.count();
+	info latestRecord.count();
+	if(latestRecord.count() > 0)
+	{
+		info "done";
+		since_id = latestRecord.Item_ID.toLong();
+		info since_id;
+	}
+	else
+	{
+		since_id = 0;
+	}
+	pagesList = List();
+	pagesList = {11,12,13,14,15,16,17,18,19,20};
+	for each  page in pagesList
+	{
+		response = invokeurl
+		[
+			url :"https://shopatsauce1.myshopify.com/admin/api/2025-04/products.json?limit=250&since_id=" + since_id
+			type :GET
+			headers:{"X-Shopify-Access-Token":""}
+		];
+		products = response.get("products");
+		if(products.isEmpty())
+		{
+			break;
+		}
+		for each  product in products
+		{
+			if(product.get("id").toLong() > since_id)
+			{
+				since_id = product.get("id").toLong();
+			}
+			abc = Item_Master[Item_Name == product.get("title")];
+			if(abc.count() > 0)
+			{
+				continue;
+			}
+			itemName = product.get("title");
+			itemId = product.get("id").toString();
+			tagsText = product.get("tags");
+			tagFound = "Non Consignment";
+			// Add this right after you get tagsText
+			// info "Raw tagsText: " + tagsText;
+			// info "tagsText type check - starts with [: " + tagsText.startsWith("[");
+			// info "tagsText length: " + tagsText.length();
+			// 			if(tagsText != null && tagsText != "")
+			// 			{
+			// 				tagsList = tagsText.toList();
+			// 				for each tag in tagsList
+			// 				{
+			// 					tagLower = tag.trim().toLowerCase();
+			// 					if(tagLower == "consignment")
+			// 					{
+			// 						tagFound = "Consignment";
+			// 						break;
+			// 					}
+			// 				}
+			// 			}
+			if(tagsText != null && tagsText != "")
+			{
+				info "Raw tagsText: " + tagsText;
+				// Simple and reliable approach
+				if(tagsText.toLowerCase().contains("consignment"))
+				{
+					tagFound = "Consignment";
+					info "Found consignment using contains method";
+				}
+			}
+			variants = product.get("variants");
+			if(variants != null && variants.size() > 0)
+			{
+				variant = variants.get(0);
+				sku = variant.get("sku");
+				price = variant.get("price");
+			}
+			else
+			{
+				sku = "";
+				price = "0";
+			}
+			insert into Item_Master
+			[
+				Added_User=zoho.loginuser
+				Item_Name=itemName
+				SKU=sku
+				Unit="N/A"
+				Item_ID=itemId
+				Cost_Price=price
+				Tags=tagFound
+				Supplier_Name=""
+			]
+			// 			if(product.get("id").toLong() > since_id)
+			// 			{
+			// 				since_id = product.get("id").toLong();
+			// 			}
+		}
+		// 		if(products.size() < 250)
+		// 		{
+		// 			break;
+		// 		}
+	}
+	info since_id;
+	return "Success";
+}
