@@ -1,0 +1,140 @@
+
+billStatus = bill.get("status");
+// info billStatus;
+if(billStatus == "open" || billStatus == "Partially Paid" || billStatus == "Paid" || billStatus == "overdue")
+{
+	billID = bill.get("bill_id");
+	organizationID = organization.get("organization_id");
+	billData = zoho.books.getRecordsByID("bills",organizationID,billID,"books_far");
+	// 	info billData;
+	billID = bill.get("bill_id");
+	billDate = bill.get("date");
+	billNumber = bill.get("bill_number");
+	organizationID = organization.get("organization_id");
+	vendor_name = bill.get("vendor_name");
+	line_items = bill.get("line_items");
+	billing_address = bill.get("billing_address");
+	address = billing_address.get("address");
+	// info line_items;
+	// total = bill.get("total");
+	/*--------------------------------------   Data from Master Data    ---------------------------------------*/
+	masterData = zoho.books.getRecords("cm_asset_category_master",organizationID,{},"books_far");
+	assetRegister = zoho.books.getRecords("cm_asset_register",organizationID,{},"books_far");
+	MasterData_module_records = masterData.get("module_records");
+	// info MasterData_module_records;
+	bill_Category = "";
+	bill_Sub_category = "";
+	for each  ele in line_items
+	{
+		info "hello";
+		name = ele.get("name");
+		quantity = ele.get("quantity");
+		account_name = ele.getJSON("account_name");
+		// 	info MasterData_module_records;
+		for each  ele1 in MasterData_module_records
+		{
+			MasterData_asset_account = ele1.get("cf_asset_account_formatted");
+			if(account_name == MasterData_asset_account)
+			{
+				cf_category = ele1.get("cf_category");
+				// 			info "=>" + cf_category;
+				lineItem_total = ele.get("item_total");
+				line_item_taxes = ele.getJSON("line_item_taxes");
+				if(!line_item_taxes.isEmpty())
+				{
+					tax_amount = line_item_taxes.get(0).get("tax_amount");
+					if(tax_amount == "" || tax_amount == null)
+					{
+						tax_amount = 0;
+					}
+					item_total = lineItem_total + tax_amount;
+				}
+				else
+				{
+					item_total = lineItem_total;
+				}
+				residual_value = (item_total * 5) / 100;
+				description = ele.get("description");
+				item_custom_fields = bill.getJSON("item_custom_fields");
+				info item_custom_fields;
+				item_id = ele.getJSON("item_id");
+				particularItem = zoho.books.getRecordsByID("items",organizationID,item_id,"books_far");
+				itemDetails = particularItem.get("item");
+				// 						info itemDetails;
+				custom_field_hash = itemDetails.get("custom_field_hash");
+				cf_fixed_asset_yes_no = custom_field_hash.get("cf_fixed_asset_yes_no");
+				info cf_fixed_asset_yes_no;
+				bill_Category = custom_field_hash.get("cf_asset_category");
+				info bill_Category;
+				asset_sub_category = custom_field_hash.get("cf_asset_sub_category");
+				asset_serialno = ele1.get("cf_serial_no");
+				// 			info bill_Category;
+				// 			for each  element in item_custom_fields
+				// 			{
+				// 				tax_amt = element.getJSON("value_formatted");
+				// 			}
+				if(cf_fixed_asset_yes_no == "Yes")
+				{
+					if(bill_Category != "N/A")
+					{
+						// 						info "Yes, Come In";
+						sub_map = Map();
+						sub_map.put("cf_sub_category_name",asset_sub_category);
+						sub_cat_master = zoho.books.getRecords("cm_sub_category_master",organizationID,sub_map,"books_far");
+						// 						info sub_cat_master;
+						sub_master = sub_cat_master.get("module_records");
+						for each  recor in sub_master
+						{
+							sub_cat_id = recor.get("module_record_id");
+						}
+						// 						info sub_cat_id;
+						updateMap = Map();
+						cf_asset_life = ele1.get("cf_asset_useful_life_days");
+						cf_dep_rate = ele1.get("cf_dep_rate_company_s_act");
+						// 					cf_sub_category = ele.get("cf_sub_category");
+						// 			info "More , Come in";
+						cf_net_book_value = item_total;
+						dateE = zoho.currentdate;
+						monthYear = dateE.getSuffix("-");
+						year = monthYear.getSuffix("-");
+						expiryDate = billDate.addDay(cf_asset_life);
+						formatted_date = expiryDate.toString("yyyy-MM-dd");
+						// 						updateMap.put("cf_accu_dep",0);
+						updateMap.put("cf_accu_dep_wdv",0);
+						updateMap.put("cf_net_book_value",cf_net_book_value.toDecimal());
+						updateMap.put("cf_asset_name",name);
+						updateMap.put("cf_bill_no",billID);
+						updateMap.put("cf_opening_accumulated_balance",0.0);
+						updateMap.put("cf_dep_rate",cf_dep_rate);
+						updateMap.put("cf_useful_life",cf_asset_life);
+						updateMap.put("cf_balance_life",cf_asset_life);
+						updateMap.put("cf_days_lapsed",0);
+						updateMap.put("cf_asset_category",cf_category);
+						info cf_category;
+						info sub_cat_master;
+						updateMap.put("cf_sub_category",sub_cat_id);
+						updateMap.put("cf_asset_date_of_put_to_use",billDate);
+						updateMap.put("cf_asset_serial_no",asset_serialno);
+						updateMap.put("cf_purchase_date",billDate);
+						updateMap.put("cf_purchase_amount",item_total);
+						updateMap.put("cf_residual_value",residual_value);
+						updateMap.put("cf_supplier_name",vendor_name);
+						updateMap.put("cf_location","1188465000016125091");
+						updateMap.put("cf_useful_life_exhausted","No");
+						updateMap.put("cf_asset_status","Active");
+						updateMap.put("cf_expiry_date_of_asset",formatted_date);
+						updateMap.put("cf_last_dep_till_month_year","----");
+						info "Worked till now";
+						// 					updateMap.put("cf_address",address);
+						createRecords = zoho.books.createRecord("cm_asset_register",organizationID,updateMap,"books_far");
+						info createRecords;
+					}
+				}
+			}
+		}
+	}
+}
+else
+{
+	info "Bill is Not Active";
+}
