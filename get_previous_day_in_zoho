@@ -1,0 +1,3 @@
+today = zoho.currentdate;
+yesterday = today.addDay(-1);
+info yesterday;
