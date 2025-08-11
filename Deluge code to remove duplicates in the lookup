@@ -1,0 +1,16 @@
+items = Items_Master[ID != 0];
+// items_list = items.toList();
+info items;
+vendor_list = List();
+for each  item in items
+{
+	// 	info item.Vendor;
+	vendor_list.add(item.Vendor);
+}
+v_list = vendor_list.distinct();
+info v_list.size();
+for each  vendor in v_list
+{
+	v = Items_Master[Vendor == vendor];
+	input.Items_Master:ui.add(v.ID);
+}
