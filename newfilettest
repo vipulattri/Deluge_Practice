@@ -1,0 +1,225 @@
+
+estimates = estimate.get("estimate_id");
+estimatedate = estimate.get("date").toDate();
+organizationID = "887677172";
+estimates_resp = zoho.books.getRecordsByID("estimates",organizationID,estimates,"zbooks2");
+info estimates_resp;
+if(estimates_resp.containsKey("estimate"))
+{
+	estimate_data = estimates_resp.get("estimate");
+	cf_exworks_costs = 0;
+	cf_exworks_costs = estimate_data.get("uninvoiced_amount");
+	if(estimate_data != null && estimate_data.containsKey("line_items"))
+	{
+		line_items = estimate_data.get("line_items");
+		// Prepare vars for calculation
+		qty = 0;
+		localtransport = 0;
+		margin1 = 0;
+		margin2 = 0;
+		totalexworkcost = 0;
+		freightCharges = 0;
+		totalinland = 0;
+		import_duty = 0;
+		subtotal = 0;
+		subtotal2 = 0;
+		insurance = 0;
+		cf_usd_to_idrs = 0;
+		total_vat = 0;
+		vat = 0;
+		cf_total_value_usd_to_idrs = 0;
+		custom_fields = estimate.get("custom_fields");
+		if(custom_fields != null && custom_fields.size() > 0)
+		{
+			for each  field in custom_fields
+			{
+				if(field.get("api_name") == "cf_local_transport")
+				{
+					localtransport = ifnull(field.get("value"),0).toNumber();
+					info "localtransport" + localtransport;
+				}
+				if(field.get("api_name") == "cf_exworks_costs")
+				{
+					totalexworkcost = ifnull(field.get("value"),0).toDecimal();
+				}
+				if(field.get("api_name") == "cf_insurance")
+				{
+					insurance = ifnull(field.get("value"),0).toDecimal();
+				}
+				if(field.get("api_name") == "cf_subtotal")
+				{
+					subtotal = ifnull(field.get("value"),0).toDecimal();
+					info "subtotal" + subtotal;
+				}
+				if(field.get("api_name") == "cf_qty")
+				{
+					qty = ifnull(field.get("value"),0).toDecimal();
+				}
+				if(field.get("api_name") == "cf_exworks_costs")
+				{
+					cf_exworks_costs = cf_exworks_costs;
+					info "cf_exworks_costs: " + cf_exworks_costs;
+				}
+				if(field.get("api_name") == "cf_vat")
+				{
+					vat = ifnull(field.get("value"),0).toDecimal();
+				}
+				if(field.get("api_name") == "cf_margin_1_30")
+				{
+					margin1 = ifnull(field.get("value"),0).toDecimal();
+					info "cf_margin_1_30 (%): " + margin1;
+				}
+				if(field.get("api_name") == "cf_margin_2_30")
+				{
+					margin2 = ifnull(field.get("value"),0).toDecimal();
+					info "cf_margin_2_30 (%): " + margin2;
+				}
+				if(field.get("api_name") == "cf_total_value_usd_to_idr")
+				{
+					cf_total_value_usd_to_idrs = ifnull(field.get("value"),0).toDecimal();
+					info "cf_total_value_usd_to_idr: " + cf_total_value_usd_to_idrs;
+				}
+				if(field.get("api_name") == "cf_freight_charges")
+				{
+					freightCharges = ifnull(field.get("value"),0).toDecimal();
+					info "cf_freight_charges: " + freightCharges;
+				}
+				if(field.get("api_name") == "cf_import_duty")
+				{
+					import_duty = ifnull(field.get("value"),0).toDecimal();
+					info "cf_import_duty (%): " + import_duty;
+				}
+				if(field.get("api_name") == "cf_total_landed_cost")
+				{
+					totalinland = ifnull(field.get("value"),0).toDecimal();
+					info "cf_total_landed_cost: " + totalinland;
+				}
+			}
+		}
+		values_usdtoidr = totalinland * cf_usd_to_idrs;
+		if(cf_total_value_usd_to_idrs != null && qty != null && qty != 0)
+		{
+			cf_total_value_usd_to_idrss = cf_total_value_usd_to_idrs / qty;
+			info "value " + cf_total_value_usd_to_idrss;
+		}
+		else
+		{
+			cf_total_value_usd_to_idrss = 0;
+		}
+		// Convert percentage to decimal & apply (safe check)
+		margin1_decimal = if(margin1 != null,margin1 / 100,0);
+		// 		info "exworkd cost" + cf_exworks_costs;
+		// 		info "calculation" + (cf_exworks_costs *(margin1 /100));
+		total_margin1 = cf_exworks_costs * margin1 / 100;
+		info "Calculated Margin1  " + total_margin1;
+		info total_margin1;
+		info cf_exworks_costs;
+		subtotal = total_margin1.toNumber() + cf_exworks_costs.toNumber();
+		info "subtotal " + subtotal;
+		margin2_decimal = if(margin2 != null,margin2 / 100,0);
+		total_margin2 = subtotal * margin2_decimal;
+		info "Calculated Margin2  " + total_margin2;
+		subtotal2 = subtotal + total_margin2;
+		info "subtotal2  " + subtotal2;
+		grandtotal = freightCharges + subtotal2;
+		info "grand total " + grandtotal;
+		importsDuty = (cf_exworks_costs + freightCharges) * import_duty / 100;
+		info "Import Duty value " + importsDuty;
+		// --- Fix for division by zero ---
+		if(import_duty != null && import_duty != 0)
+		{
+			importdutyvalue = (importsDuty * import_duty) / 100;
+		}
+		else
+		{
+			importdutyvalue = 0;
+		}
+		info "duty " + importdutyvalue;
+		info "imports duty charges " + importsDuty;
+		info cf_exworks_costs;
+		info "total margin" + total_margin1;
+		info "Subtotal total 2 " + subtotal2;
+		info "Freight Charges " + freightCharges;
+		info "Import Duty " + importsDuty;
+		total_vat = subtotal * vat / 100;
+		info "Local Transport " + localtransport;
+		TotalLanded_Cost = subtotal2 + freightCharges + importsDuty + localtransport + insurance + total_vat;
+		totalexworkcost = cf_exworks_costs.toNumber() * qty.toNumber();
+		totals = estimate_data.get("total");
+		info totals;
+		// ✅ Build custom fields list
+		customFieldList = List();
+		customFieldMap2 = Map();
+		customFieldMap2.put("api_name","cf_subtotal");
+		customFieldMap2.put("value",subtotal);
+		customFieldList.add(customFieldMap2);
+		customFieldMap3 = Map();
+		customFieldMap3.put("api_name","cf_exworks_costs");
+		customFieldMap3.put("value",cf_exworks_costs);
+		customFieldList.add(customFieldMap3);
+		customFieldMap4 = Map();
+		customFieldMap4.put("api_name","cf_local_transport");
+		customFieldMap4.put("value",localtransport);
+		customFieldList.add(customFieldMap4);
+		customFieldMap5 = Map();
+		customFieldMap5.put("api_name","cf_margin1");
+		customFieldMap5.put("value",total_margin1);
+		customFieldList.add(customFieldMap5);
+		customFieldMap6 = Map();
+		customFieldMap6.put("api_name","cf_margin2");
+		customFieldMap6.put("value",total_margin2);
+		customFieldList.add(customFieldMap6);
+		customFieldMap7 = Map();
+		customFieldMap7.put("api_name","cf_import_duty_value");
+		customFieldMap7.put("value",importdutyvalue);
+		customFieldList.add(customFieldMap7);
+		customFieldMap8 = Map();
+		customFieldMap8.put("api_name","cf_total_landed_cost");
+		customFieldMap8.put("value",TotalLanded_Cost);
+		customFieldList.add(customFieldMap8);
+		customFieldMap9 = Map();
+		customFieldMap9.put("api_name","cf_vat");
+		customFieldMap9.put("value",vat);
+		customFieldList.add(customFieldMap9);
+		customFieldMap10 = Map();
+		customFieldMap10.put("api_name","cf_total_value_usd_to_idr");
+		customFieldMap10.put("value",values_usdtoidr.toNumber());
+		customFieldList.add(customFieldMap10);
+		customFieldMap11 = Map();
+		customFieldMap11.put("api_name","cf_selling_price_each");
+		customFieldMap11.put("value",cf_total_value_usd_to_idrss);
+		customFieldList.add(customFieldMap11);
+		customFieldMap12 = Map();
+		customFieldMap12.put("api_name","cf_round_off");
+		customFieldMap12.put("value",cf_total_value_usd_to_idrss.round(0));
+		customFieldList.add(customFieldMap12);
+		customFieldMap13 = Map();
+		customFieldMap13.put("api_name","cf_quote");
+		customFieldMap13.put("value",cf_total_value_usd_to_idrss.round(0));
+		customFieldList.add(customFieldMap13);
+		customFieldMap14 = Map();
+		customFieldMap14.put("api_name","cf_total_exwork_cost");
+		customFieldMap14.put("value",totalexworkcost);
+		customFieldList.add(customFieldMap14);
+		customFieldMap15 = Map();
+		customFieldMap15.put("api_name","cf_qty");
+		customFieldMap15.put("value",qty);
+		customFieldList.add(customFieldMap15);
+		customFieldMap16 = Map();
+		customFieldMap16.put("api_name","cf_inland_transportation");
+		customFieldMap16.put("value",totalinland);
+		customFieldList.add(customFieldMap16);
+		DataMap = Map();
+		DataMap.put("custom_fields",customFieldList);
+		Update = zoho.books.updateRecord("estimates",organizationID,estimates,DataMap,"zbooks2");
+		info Update;
+	}
+	else
+	{
+		info "estimate_data missing or line_items key not found";
+	}
+}
+else
+{
+	info "estimates_resp missing estimate key";
+}
